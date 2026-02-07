@@ -1,0 +1,40 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Word {
+  id        String   @id @default(uuid())
+  english   String   @unique
+  meaning   String
+  example   String? // Field for Synonyms now
+  createdAt DateTime @default(now())
+
+  DailyWords DailyWord[]
+}
+
+model DailyPlan {
+  id        String   @id @default(uuid())
+  date      String   @unique // Format: "YYYY-MM-DD"
+  status    String   @default("LEARNING") // LEARNING, COMPLETED
+  score     Int?     // Score out of 5 (or 100)
+  
+  words     DailyWord[]
+}
+
+model DailyWord {
+  id          String   @id @default(uuid())
+  dailyPlanId String
+  wordId      String
+  
+  userSentence String? // User writes a sentence here
+
+  dailyPlan   DailyPlan @relation(fields: [dailyPlanId], references: [id])
+  word        Word      @relation(fields: [wordId], references: [id])
+
+  @@unique([dailyPlanId, wordId])
+}
