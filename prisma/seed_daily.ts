@@ -1,4 +1,5 @@
 import { PrismaClient } from '@prisma/client';
+import bcrypt from 'bcryptjs';
 
 const prisma = new PrismaClient();
 
@@ -85,6 +86,8 @@ const WORDS = [
     { english: "address", meaning: "주소, 연설하다", synonym: "speech" }, // Total 70+ words
 ];
 
+
+
 async function main() {
     console.log('Starting daily seed...');
 
@@ -92,7 +95,20 @@ async function main() {
     console.log('Cleaning old data...');
     await prisma.dailyWord.deleteMany({});
     await prisma.dailyPlan.deleteMany({});
-    await prisma.word.deleteMany({}); // Verify this is what we want. Yes, to remove 'word_1', 'word_2'.
+    await prisma.user.deleteMany({}); // Clear users
+    await prisma.word.deleteMany({});
+
+    // Create Default User
+    const hashedPassword = await bcrypt.hash('password', 10);
+    const user = await prisma.user.create({
+        data: {
+            username: 'student1',
+            password: hashedPassword,
+            role: 'STUDENT'
+        }
+    });
+    console.log('Created default user: student1');
+
     for (const w of WORDS) {
         await prisma.word.upsert({
             where: { english: w.english },
@@ -100,10 +116,6 @@ async function main() {
             create: { english: w.english, meaning: w.meaning, example: w.synonym }
         });
     }
-
-    // 2. Clear old daily plans for clean slate (optional, but good for dev)
-    // await prisma.dailyWord.deleteMany({});
-    // await prisma.dailyPlan.deleteMany({});
 
     // 3. Create Daily Plans from Feb 8 to June 30
     const start = new Date('2026-02-08');
@@ -122,8 +134,12 @@ async function main() {
         d.setDate(start.getDate() + i);
         const dateStr = d.toISOString().slice(0, 10); // YYYY-MM-DD
 
-        // Check if plan exists
-        const exists = await prisma.dailyPlan.findUnique({ where: { date: dateStr } });
+        // Check if plan exists for this user
+        const exists = await prisma.dailyPlan.findUnique({
+            where: {
+                date_userId: { date: dateStr, userId: user.id }
+            }
+        });
         if (exists) continue;
 
         // Pick 10 random words
@@ -134,6 +150,7 @@ async function main() {
             data: {
                 date: dateStr,
                 status: 'LEARNING',
+                userId: user.id, // Link to user
                 words: {
                     create: selected.map(w => ({
                         wordId: w.id

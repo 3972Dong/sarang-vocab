@@ -45,23 +45,31 @@ export const SentenceMode = ({ plan, onComplete }: { plan: any, onComplete: () =
         onComplete();
     };
 
-    return (
-        <div className="space-y-8">
-            <h2 className="text-2xl font-bold">Write Sentences</h2>
-            <p className="text-gray-500">Write a sentence for each word to unlock the test.</p>
+    const completedCount = Object.keys(sentences).length + plan.words.filter((w: any) => w.userSentence).length;
+    // Note: This simple count might double count if we edit pre-filled ones, but for MVP assuming simple state. 
+    // Better: 
+    const isComplete = plan.words.every((w: any) => (sentences[w.wordId] || w.userSentence)?.length > 0);
 
-            <div className="space-y-6">
+    return (
+        <div className="space-y-8 max-w-2xl mx-auto">
+            <div className="text-center mb-10">
+                <h2 className="text-3xl font-bold text-brand-primary mb-2">Sentence Composition</h2>
+                <p className="text-brand-secondary">Construct meaningful sentences to internalize each word.</p>
+            </div>
+
+            <div className="space-y-8">
                 {plan.words.map((dw: any) => (
-                    <div key={dw.wordId} className="p-4 border rounded shadow-sm bg-white dark:bg-zinc-800 dark:border-zinc-700">
-                        <div className="flex justify-between items-baseline mb-2">
-                            <h3 className="text-xl font-bold">{dw.word.english}</h3>
-                            <span className="text-sm text-gray-400">{dw.word.example}</span>
+                    <div key={dw.wordId} className="p-6 border border-brand-border rounded-xl bg-brand-surface shadow-sm transition hover:shadow-md">
+                        <div className="flex justify-between items-baseline mb-4 border-b border-brand-border pb-2">
+                            <h3 className="text-2xl font-bold text-brand-primary">{dw.word.english}</h3>
+                            <span className="text-sm text-brand-secondary italic">{dw.word.example}</span>
                         </div>
-                        <p className="text-gray-600 dark:text-gray-300 mb-2">{dw.word.meaning}</p>
+                        <p className="text-brand-secondary mb-4 text-lg">{dw.word.meaning}</p>
 
                         <textarea
-                            className="w-full border rounded p-2 dark:bg-zinc-700 dark:border-zinc-600"
-                            placeholder={`Write a sentence using "${dw.word.english}"...`}
+                            className="w-full border border-brand-border rounded-lg p-4 focus:ring-2 focus:ring-brand-accent focus:border-transparent outline-none transition bg-brand-background text-brand-primary"
+                            placeholder={`Compose a sentence using "${dw.word.english}"...`}
+                            rows={3}
                             value={sentences[dw.wordId] || dw.userSentence || ''}
                             onChange={(e) => handleChange(dw.wordId, e.target.value)}
                         />
@@ -71,10 +79,13 @@ export const SentenceMode = ({ plan, onComplete }: { plan: any, onComplete: () =
 
             <button
                 onClick={handleSubmit}
-                disabled={loading}
-                className="w-full bg-blue-600 text-white py-4 rounded-xl text-lg font-bold hover:bg-blue-700 transition"
+                disabled={loading || !isComplete}
+                className={`w-full py-4 rounded-xl text-lg font-semibold transition shadow-lg ${loading || !isComplete
+                        ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                        : 'bg-brand-accent text-white hover:bg-brand-accentHover'
+                    }`}
             >
-                {loading ? 'Saving...' : 'Submit & Start Test'}
+                {loading ? 'Saving Progress...' : isComplete ? 'Submit & Proceed to Test' : 'Complete All Sentences to Continue'}
             </button>
         </div>
     );

@@ -1,7 +1,13 @@
 import { prisma } from '@/lib/prisma';
 import { NextResponse } from 'next/server';
+import { auth } from '@/auth';
 
 export async function GET(request: Request) {
+    const session = await auth();
+    if (!session || !session.user || !session.user.id) {
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     const { searchParams } = new URL(request.url);
     const month = searchParams.get('month') || new Date().toISOString().slice(0, 7); // YYYY-MM
     // Default to current month if not provided
@@ -9,6 +15,7 @@ export async function GET(request: Request) {
     try {
         const plans = await prisma.dailyPlan.findMany({
             where: {
+                userId: session.user.id,
                 date: {
                     startsWith: month
                 }
@@ -16,11 +23,11 @@ export async function GET(request: Request) {
         });
 
         const totalDays = plans.length;
-        const completed = plans.filter(p => p.status === 'COMPLETED');
+        const completed = plans.filter((p: any) => p.status === 'COMPLETED');
         const completedCount = completed.length;
 
         let totalScore = 0;
-        completed.forEach(p => {
+        completed.forEach((p: any) => {
             if (p.score) totalScore += p.score;
         });
 

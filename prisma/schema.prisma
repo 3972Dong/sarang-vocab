@@ -8,6 +8,17 @@ datasource db {
   directUrl = env("POSTGRES_URL_NON_POOLING") // uses a direct connection
 }
 
+
+model User {
+  id        String   @id @default(uuid())
+  username  String   @unique
+  password  String
+  role      String   @default("STUDENT") // STUDENT, ADMIN
+  createdAt DateTime @default(now())
+
+  dailyPlans DailyPlan[]
+}
+
 model Word {
   id        String   @id @default(uuid())
   english   String   @unique
@@ -20,11 +31,17 @@ model Word {
 
 model DailyPlan {
   id        String   @id @default(uuid())
-  date      String   @unique // Format: "YYYY-MM-DD"
+  date      String // Format: "YYYY-MM-DD"
   status    String   @default("LEARNING") // LEARNING, COMPLETED
   score     Int?     // Score out of 5 (or 100)
+  busyLevel String?  // BUSY, MODERATE, RELAXED
+  
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
   
   words     DailyWord[]
+
+  @@unique([date, userId])
 }
 
 model DailyWord {
@@ -38,4 +55,39 @@ model DailyWord {
   word        Word      @relation(fields: [wordId], references: [id])
 
   @@unique([dailyPlanId, wordId])
+}
+
+model School {
+  id          String   @id @default(uuid())
+  name        String
+  type        String   // BOARDING, DAY
+  gender      String   // COED, BOYS, GIRLS
+  state       String
+  city        String
+  
+  // Admissions
+  deadline       String?
+  toeflReq       String? // e.g. "80+", "None"
+  interviewReq   String?
+
+  // Stats
+  nicheGrade     String? // e.g. "A+", "A"
+  studentBody    Int?
+  intlPercentage Int?
+  apCount        Int?
+  
+  // Financials
+  tuition         String? // Stored as string for formatting "$50,000" or int?
+  programFee      String? // BGE Fee
+  otherFees       String?
+
+  // Content
+  description     String? 
+  facilities      String? 
+  athletics       String? 
+  
+  tags        String[] // Support for tags like "Ivy Feeder", etc. (Postgres Only)
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }

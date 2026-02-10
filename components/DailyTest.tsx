@@ -64,51 +64,52 @@ export const DailyTest = ({ plan, onFinish }: { plan: any, onFinish: () => void 
     if (!started) {
         return (
             <div className="max-w-md mx-auto py-10 text-center">
-                <div className="bg-white p-8 rounded-3xl shadow-lg border-2 border-sarang-pink/30">
-                    <div className="text-6xl mb-6">📝</div>
-                    <h2 className="text-3xl font-bold mb-4 text-sarang-text">Daily Vocab Test</h2>
+                <div className="bg-brand-surface p-10 rounded-2xl shadow-xl border border-brand-border">
+                    <div className="text-4xl mb-6 text-brand-primary font-light">Daily Evaluation</div>
 
-                    <div className="bg-orange-50 border border-orange-200 p-4 rounded-xl mb-8 text-left">
-                        <p className="font-bold text-orange-600 mb-1">⚠️ Important Warning</p>
-                        <p className="text-sm text-orange-800">
-                            You can only take this test <span className="font-bold">ONCE per day</span>.
-                            Results passed cannot be changed. Are you ready?
+                    <div className="bg-brand-background border-l-4 border-brand-secondary p-4 mb-8 text-left">
+                        <p className="font-bold text-brand-primary mb-1 text-sm uppercase tracking-wide">Usage Note</p>
+                        <p className="text-sm text-brand-secondary">
+                            This test can be taken once per day. Results are final. Ensure you are ready before proceeding.
                         </p>
                     </div>
 
                     <button
                         onClick={() => setStarted(true)}
-                        className="w-full bg-black text-white py-4 rounded-xl font-bold text-lg hover:bg-zinc-800 transition shadow-md hover:shadow-lg active:scale-95"
+                        className="w-full bg-brand-primary text-white py-4 rounded-xl font-bold text-lg hover:bg-black transition shadow-lg"
                     >
-                        Start Test 💪
+                        Begin Assessment
                     </button>
-                    <div className="mt-4 text-gray-400 text-sm">Good luck, Sarang!</div>
+                    <div className="mt-4 text-brand-secondary text-sm">Good luck.</div>
                 </div>
             </div>
         );
     }
 
-    if (questions.length === 0) return <div>Loading Test...</div>;
+    if (questions.length === 0) return <div className="text-center py-10 text-brand-secondary">Preparing Assessment...</div>;
 
     const currentQ = questions[currentIndex];
 
     return (
-        <div className="max-w-md mx-auto py-10">
-            <h2 className="text-2xl font-bold mb-6 text-center text-sarang-text">
-                Question {currentIndex + 1} <span className="text-gray-300">/ {questions.length}</span>
-            </h2>
+        <div className="max-w-md mx-auto py-6">
+            <div className="flex justify-between items-end mb-6 border-b border-brand-border pb-4">
+                <h2 className="text-xl font-bold text-brand-primary">Assessment</h2>
+                <span className="text-brand-secondary font-mono text-sm">
+                    {currentIndex + 1} / {questions.length}
+                </span>
+            </div>
 
-            <div className="p-8 bg-white rounded-3xl shadow-sm border-2 border-sarang-lavender/50 text-center relative overflow-hidden">
-                <div className="text-sm font-bold text-gray-400 uppercase tracking-widest mb-4">Translate to English</div>
-                <div className="text-3xl font-bold mb-8 text-gray-700">{currentQ.word.meaning}</div>
+            <div className="p-10 bg-brand-surface rounded-2xl shadow-lg border border-brand-border text-center relative overflow-hidden">
+                <div className="text-xs font-bold text-brand-accent uppercase tracking-widest mb-6">Translate to English</div>
+                <div className="text-4xl font-extrabold mb-10 text-brand-primary">{currentQ.word.meaning}</div>
 
                 <input
                     type="text"
                     value={input}
                     onChange={(e) => setInput(e.target.value)}
-                    className={`w-full p-4 border-2 rounded-2xl text-center text-xl font-bold transition outline-none ${feedback && !feedback.startsWith('Wrong') ? 'bg-green-50 border-green-400 text-green-700' :
-                            feedback?.startsWith('Wrong') ? 'bg-red-50 border-red-400 text-red-700' :
-                                'border-gray-200 focus:border-sarang-teal focus:ring-4 focus:ring-sarang-teal/10'
+                    className={`w-full p-4 border-b-2 text-center text-2xl font-light transition outline-none bg-transparent ${feedback && !feedback.startsWith('Wrong') ? 'border-green-500 text-green-700' :
+                            feedback?.startsWith('Wrong') ? 'border-red-500 text-red-700' :
+                                'border-brand-border focus:border-brand-primary text-brand-primary'
                         }`}
                     placeholder="Type answer..."
                     autoFocus
@@ -117,8 +118,7 @@ export const DailyTest = ({ plan, onFinish }: { plan: any, onFinish: () => void 
                 />
 
                 {feedback && (
-                    <div className={`mt-6 text-xl font-bold animate-bounce ${feedback.startsWith('Wrong') ? 'text-red-500' : 'text-sarang-teal'
-                        }`}>
+                    <div className={`mt-8 text-lg font-medium ${feedback.startsWith('Wrong') ? 'text-red-600' : 'text-green-600'}`}>
                         {feedback}
                     </div>
                 )}
@@ -126,10 +126,10 @@ export const DailyTest = ({ plan, onFinish }: { plan: any, onFinish: () => void 
                 {!feedback && (
                     <button
                         onClick={handleAnswer}
-                        className="mt-8 w-full bg-sarang-text text-white py-4 rounded-xl font-bold hover:bg-black transition shadow-md active:scale-95"
+                        className="mt-10 w-full bg-brand-secondary text-white py-4 rounded-xl font-semibold hover:bg-brand-primary transition shadow-md"
                         disabled={!input.trim()}
                     >
-                        Check Answer ✨
+                        Submit Answer
                     </button>
                 )}
             </div>

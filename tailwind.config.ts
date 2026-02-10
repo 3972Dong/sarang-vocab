@@ -14,13 +14,14 @@ const config: Config = {
                     "conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))",
             },
             colors: {
-                sarang: {
-                    pink: '#FFB7B2',
-                    lightPink: '#FFDAC1',
-                    teal: '#B5EAD7',
-                    lavender: '#E2F0CB',
-                    cream: '#FFF9C4',
-                    text: '#555555'
+                brand: {
+                    primary: '#111827', // Gray 900
+                    secondary: '#6b7280', // Gray 500
+                    accent: '#4f46e5', // Indigo 600
+                    accentHover: '#4338ca', // Indigo 700
+                    background: '#f9fafb', // Gray 50
+                    surface: '#ffffff',
+                    border: '#e5e7eb', // Gray 200
                 }
             }
         },

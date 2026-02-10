@@ -28,14 +28,11 @@ export const DailyQuote = () => {
     if (!quote.text) return null;
 
     return (
-        <div className="bg-gradient-to-r from-sarang-pink to-sarang-lightPink p-6 rounded-3xl shadow-md text-center mb-8 transform transition hover:scale-[1.02]">
-            <span className="inline-block bg-white/50 text-blue-900 text-xs font-bold px-3 py-1 rounded-full mb-3 backdrop-blur-sm">
-                ✨ Today's Motivation
-            </span>
-            <p className="text-xl md:text-2xl font-bold text-blue-900 mb-2 font-serif italic">
+        <div className="text-center mb-8 px-4 animate-in fade-in duration-700">
+            <h3 className="text-xl md:text-2xl font-serif text-brand-secondary italic mb-2">
                 "{quote.text}"
-            </p>
-            <p className="text-blue-800 text-sm font-medium">
+            </h3>
+            <p className="text-sm font-bold text-brand-primary/60 uppercase tracking-widest">
                 — {quote.author}
             </p>
         </div>
